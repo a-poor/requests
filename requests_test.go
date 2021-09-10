@@ -1,6 +1,7 @@
 package requests_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/a-poor/requests"
@@ -56,4 +57,26 @@ func TestRequestHeaders(t *testing.T) {
 	if ok {
 		t.Error("req.DelHeader is not working")
 	}
+}
+
+func ExampleRequest_Send() {
+	r := requests.Request{
+		Method: requests.GET,
+		URL:    "http://example.com",
+	}
+	res, err := r.Send()
+	if err != nil {
+		// handle error
+	}
+	fmt.Println(res.StatusCode)
+	// Output: 200
+}
+
+func ExampleSendGetRequest() {
+	res, err := requests.SendGetRequest("http://example.com")
+	if err != nil {
+		// handle error
+	}
+	fmt.Println(res.StatusCode)
+	// Output: 200
 }

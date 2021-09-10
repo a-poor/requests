@@ -11,3 +11,34 @@ _created by Austin Poor_
 
 A quick and easy HTTP request library written in Go.
 
+## Installation
+
+```bash
+go get github.com/a-poor/requests
+```
+
+## Quick Start
+
+```go
+package main
+
+import (
+    "log"
+    "github.com/a-poor/requests"
+)
+
+func main() {
+    // Send the request
+    res, err := requests.SendGetRequest("https://google.com")
+
+    // If there was an error, print and return
+    if err != nil {
+        fmt.Printf("Error: %e\n", err)
+        return
+    }
+
+    // Print the response's status code
+    fmt.Printf("Status Code: %d\n", res.StatusCode)
+
+}
+```

@@ -14,6 +14,7 @@ import (
 // Read more here: https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods
 type HTTPMethod int
 
+// Enums representing HTTP methods
 const (
 	GET     HTTPMethod = iota // An HTTP GET method
 	POST                      // An HTTP POST method
@@ -59,6 +60,42 @@ type Request struct {
 	Headers map[string]string // Headers to send with the request
 	Body    []byte            // Body to send with the request
 	Timeout time.Duration     // Timeout for the request
+}
+
+// NewGetRequest creates a new Request object
+// with the supplied URL and sets the HTTP method
+// to GET.
+func NewGetRequest(url string) *Request {
+	return &Request{
+		URL:    url,
+		Method: GET,
+	}
+}
+
+// SendGetRequest creates a new HTTP GET request
+// and sends it to the specified URL.
+// Internally, calls `NewGetRequest(url).Send()`
+func SendGetRequest(url string) (*Response, error) {
+	return NewGetRequest(url).Send()
+}
+
+// NewPostRequest creates a new Request object
+// with the supplied URL, content-type header, and body sets the HTTP method
+// to POST.
+func NewPostRequest(url string, contentType string, body []byte) *Request {
+	return &Request{
+		URL:     url,
+		Method:  POST,
+		Headers: map[string]string{"content-type": contentType},
+		Body:    body,
+	}
+}
+
+// SendPostRequest creates a new HTTP POST request
+// and sends it to the specified URL.
+// Internally, calls `NewPostRequest(url, contentType, body).Send()`
+func SendPostRequest(url string, contentType string, body []byte) (*Response, error) {
+	return NewPostRequest(url, contentType, body).Send()
 }
 
 // getReqBody returns the request body as a buffer that can be
