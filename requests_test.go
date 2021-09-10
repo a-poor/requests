@@ -1,1 +1,44 @@
 package requests_test
+
+import (
+	"testing"
+
+	"github.com/a-poor/requests"
+)
+
+func TestHTTPMethods(t *testing.T) {
+	if requests.GET.String() != "GET" {
+		t.Error("requests.GET is not GET")
+	}
+	if requests.POST.String() != "POST" {
+		t.Error("requests.POST is not POST")
+	}
+	if requests.PUT.String() != "PUT" {
+		t.Error("requests.PUT is not GET")
+	}
+	if requests.DELETE.String() != "DELETE" {
+		t.Error("requests.DELETE is not DELETE")
+	}
+	if requests.HEAD.String() != "HEAD" {
+		t.Error("requests.HEAD is not HEAD")
+	}
+	if requests.OPTIONS.String() != "OPTIONS" {
+		t.Error("requests.OPTIONS is not OPTIONS")
+	}
+	if requests.PATCH.String() != "PATCH" {
+		t.Error("requests.PATCH is not PATCH")
+	}
+	if requests.CONNECT.String() != "CONNECT" {
+		t.Error("requests.CONNECT is not CONNECT")
+	}
+	if requests.TRACE.String() != "TRACE" {
+		t.Error("requests.TRACE is not TRACE")
+	}
+}
+
+func TestImport(t *testing.T) {
+	r := &requests.Request{}
+	if r == nil {
+		t.Error("Request is nil")
+	}
+}
