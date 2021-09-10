@@ -23,7 +23,7 @@ go get github.com/a-poor/requests
 package main
 
 import (
-    "log"
+    "fmt"
     "github.com/a-poor/requests"
 )
 
