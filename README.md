@@ -2,5 +2,5 @@
 
 _created by Austin Poor_
 
-A simple requests library written in Go.
+A quick and easy HTTP request library written in Go.
 
