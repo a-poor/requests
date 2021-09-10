@@ -36,9 +36,24 @@ func TestHTTPMethods(t *testing.T) {
 	}
 }
 
-func TestImport(t *testing.T) {
+func TestRequestHeaders(t *testing.T) {
 	r := &requests.Request{}
 	if r == nil {
 		t.Error("Request is nil")
+	}
+
+	r.SetHeader("Content-Type", "application/json")
+	ct, ok := r.GetHeader("content-type")
+	if !ok {
+		t.Error("req Content-Type header not set")
+	}
+	if ct != "application/json" {
+		t.Error("req.SetHeader is not working")
+	}
+
+	r.DelHeader("Content-Type")
+	_, ok = r.GetHeader("content-type")
+	if ok {
+		t.Error("req.DelHeader is not working")
 	}
 }
