@@ -1,5 +1,12 @@
 # requests
 
+[![Go Reference](https://pkg.go.dev/badge/github.com/a-poor/requests.svg)](https://pkg.go.dev/github.com/a-poor/requests)
+[![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/a-poor/requests?style=flat-square)](https://pkg.go.dev/github.com/a-poor/requests)
+[![Go Test](https://github.com/a-poor/requests/actions/workflows/go.yml/badge.svg)](https://github.com/a-poor/requests/actions/workflows/go.yml)
+[![Go Report Card](https://goreportcard.com/badge/github.com/a-poor/requests)](https://goreportcard.com/report/github.com/a-poor/requests)
+[![GitHub](https://img.shields.io/github/license/a-poor/requests?style=flat-square)](https://github.com/a-poor/requests/blob/main/LICENSE)
+![GitHub last commit](https://img.shields.io/github/last-commit/a-poor/requests?style=flat-square)
+
 _created by Austin Poor_
 
 A quick and easy HTTP request library written in Go.

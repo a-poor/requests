@@ -9,18 +9,21 @@ import (
 	"time"
 )
 
+// HTTPMethod is a type that represents an
+// HTTP request method.
+// Read more here: https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods
 type HTTPMethod int
 
 const (
-	GET HTTPMethod = iota
-	POST
-	PUT
-	DELETE
-	OPTIONS
-	HEAD
-	CONNECT
-	TRACE
-	PATCH
+	GET     HTTPMethod = iota // An HTTP GET method
+	POST                      // An HTTP POST method
+	PUT                       // An HTTP PUT method
+	DELETE                    // An HTTP DELETE method
+	OPTIONS                   // An HTTP OPTIONS method
+	HEAD                      // An HTTP HEAD method
+	CONNECT                   // An HTTP CONNECT method
+	TRACE                     // An HTTP TRACE method
+	PATCH                     // An HTTP PATCH method
 )
 
 // Convert an HTTPMethod to it's string format
@@ -49,6 +52,7 @@ func (m HTTPMethod) String() string {
 	return ""
 }
 
+// Request is a type that represents an HTTP request
 type Request struct {
 	URL     string            // URL to send the request to
 	Method  HTTPMethod        // HTTP method to use
@@ -57,13 +61,13 @@ type Request struct {
 	Timeout time.Duration     // Timeout for the request
 }
 
-// Return the request body as a buffer that can be
+// getReqBody returns the request body as a buffer that can be
 // passed to the http.NewRequest function
 func (req *Request) getReqBody() *bytes.Buffer {
 	return bytes.NewBuffer(req.Body)
 }
 
-// Get a header value from the request. Normalizes the key
+// GetHeader gets a header value from the request. Normalizes the key
 // to lowercase before checking. Returns the value of the
 // header and whether it exists.
 func (req *Request) GetHeader(name string) (string, bool) {
@@ -80,7 +84,7 @@ func (req *Request) GetHeader(name string) (string, bool) {
 	return value, ok
 }
 
-// Sets a header value in the request. Normalizes the key
+// SetHeader sets a header value in the request. Normalizes the key
 // before setting (converts to lowercase).
 func (req *Request) SetHeader(name, value string) {
 	// Create the map if it doesn't exist
@@ -95,7 +99,7 @@ func (req *Request) SetHeader(name, value string) {
 	req.Headers[key] = value
 }
 
-// Deletes a header value from the request headers
+// DelHeader deletes a header value from the request headers
 // if it exists. Normalizes the key to lowercase
 // before deleting.
 func (req *Request) DelHeader(name string) {
@@ -111,7 +115,7 @@ func (req *Request) DelHeader(name string) {
 	delete(req.Headers, key)
 }
 
-// Send the HTTP request with the supplied parameters
+// Send sends the HTTP request with the supplied parameters
 func (req *Request) Send() (*Response, error) {
 	// Create an http client (with optional timeout)
 	client := http.Client{
@@ -160,7 +164,7 @@ func (req *Request) Send() (*Response, error) {
 	return &resp, nil
 }
 
-// Send the HTTP request and panic if an error is returned.
+// MustSend sends the HTTP request and panic if an error is returned.
 // (Calls Send() internally)
 func (req *Request) MustSend() *Response {
 	resp, err := req.Send()
@@ -171,6 +175,8 @@ func (req *Request) MustSend() *Response {
 	return resp
 }
 
+// Response is a type that represents an HTTP response
+// returned from an HTTP request
 type Response struct {
 	Ok         bool              // Was the request successful? (Status codes: 200-399)
 	StatusCode int               // HTTP response status code
@@ -178,7 +184,7 @@ type Response struct {
 	Body       []byte            // HTTP Response body
 }
 
-// Get a header value from the response if it exists.
+// GetHeader gets a header value from the response if it exists.
 // Normalizes the key to lowercase before checking.
 // Returns the value of the header and whether it exists.
 func (resp *Response) GetHeader(name string) (string, bool) {
@@ -195,7 +201,7 @@ func (resp *Response) GetHeader(name string) (string, bool) {
 	return value, ok
 }
 
-// Unmarshall the response body into a map
+// JSON unmarshalls the response body into a map
 func (resp *Response) JSON() (map[string]interface{}, error) {
 	// Create a new map to store the JSON data
 	data := make(map[string]interface{})
