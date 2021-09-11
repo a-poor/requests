@@ -3,6 +3,7 @@ package requests
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strings"
@@ -162,7 +163,7 @@ func (req *Request) Send() (*Response, error) {
 	// Create the underlying request
 	httpRequest, err := http.NewRequest(req.Method.String(), req.URL, req.getReqBody())
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error creating request: %w", err)
 	}
 
 	// Set the headers in the underlying request
