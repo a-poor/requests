@@ -2,6 +2,8 @@ package requests_test
 
 import (
 	"fmt"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 
 	"github.com/a-poor/requests"
@@ -57,6 +59,33 @@ func TestRequestHeaders(t *testing.T) {
 	if ok {
 		t.Error("req.DelHeader is not working")
 	}
+}
+
+func TestSendGetRequest(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintln(w, "Hello, World!")
+
+		if r.Method != "GET" {
+			t.Errorf("Request method is \"%s\" not GET", r.Method)
+		}
+
+	}))
+	defer ts.Close()
+
+	res, err := requests.SendGetRequest(ts.URL)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if res.StatusCode != 200 {
+		t.Error("status code is not 200")
+	}
+
+	bod := string(res.Body)
+	if bod != "Hello, World!\n" {
+		t.Error(fmt.Sprintf("response body is \"%s\" not Hello, World!", bod))
+	}
+
 }
 
 func ExampleRequest_Send() {
