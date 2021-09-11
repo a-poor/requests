@@ -6,6 +6,7 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/a-poor/requests)](https://goreportcard.com/report/github.com/a-poor/requests)
 [![GitHub](https://img.shields.io/github/license/a-poor/requests?style=flat-square)](https://github.com/a-poor/requests/blob/main/LICENSE)
 ![GitHub last commit](https://img.shields.io/github/last-commit/a-poor/requests?style=flat-square)
+[![Sourcegraph](https://sourcegraph.com/github.com/a-poor/requests/-/badge.svg)](https://sourcegraph.com/github.com/a-poor/requests?badge)
 
 _created by Austin Poor_
 
