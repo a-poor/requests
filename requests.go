@@ -10,6 +10,17 @@ import (
 	"time"
 )
 
+// JSONMust marshals a map into a JSON byte slice
+// using json.Marshal and panics if there is an error.
+func JSONMust(data map[string]interface{}) []byte {
+	res, err := json.Marshal(data)
+	if err != nil {
+		panic(err)
+	}
+	return res
+
+}
+
 // HTTPMethod is a type that represents an
 // HTTP request method.
 // Read more here: https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods

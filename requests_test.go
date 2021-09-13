@@ -11,6 +11,28 @@ import (
 	"github.com/a-poor/requests"
 )
 
+func TestJSONMust(t *testing.T) {
+	defer func() {
+		if err := recover(); err != nil {
+			t.Error(err)
+		}
+	}()
+
+	data := map[string]interface{}{"msg": "ping", "nested": map[string]interface{}{"msg": "pong"}}
+	_ = requests.JSONMust(data)
+}
+
+func TestJSONMustPanics(t *testing.T) {
+	defer func() {
+		if r := recover(); r == nil {
+			t.Error("JSONMust should panic but doesn't")
+		}
+	}()
+
+	data := map[string]interface{}{"msg": make(chan int)}
+	_ = requests.JSONMust(data)
+}
+
 func TestHTTPMethods(t *testing.T) {
 	if requests.GET.String() != "GET" {
 		t.Error("requests.GET is not GET")
