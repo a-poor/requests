@@ -117,8 +117,8 @@ func (req *Request) getReqBody() *bytes.Buffer {
 }
 
 // GetHeader gets a header value from the request. Normalizes the key
-// to lowercase before checking. Returns the value of the
-// header and whether it exists.
+// to lowercase before checking. Returns the value associated with the
+// key and whether it exists.
 func (req *Request) GetHeader(name string) (string, bool) {
 	// Create the map if it doesn't exist
 	if req.Headers == nil {
@@ -128,13 +128,19 @@ func (req *Request) GetHeader(name string) (string, bool) {
 	// Normalize the key (convert to lowercase)
 	key := strings.ToLower(name)
 
-	// Return the header and whether it exists
-	value, ok := req.Headers[key]
-	return value, ok
+	// Do a case-insensitive check for the key
+	for k, v := range req.Headers {
+		if strings.ToLower(k) == key {
+			return v, true
+		}
+	}
+
+	// Key not found
+	return "", false
 }
 
 // SetHeader sets a header value in the request. Normalizes the key
-// before setting (converts to lowercase).
+// to lowercase before setting.
 func (req *Request) SetHeader(name, value string) {
 	// Create the map if it doesn't exist
 	if req.Headers == nil {
@@ -160,8 +166,12 @@ func (req *Request) DelHeader(name string) {
 	// Normalize the key (convert to lowercase)
 	key := strings.ToLower(name)
 
-	// Delete the header if it exists
-	delete(req.Headers, key)
+	for k, _ := range req.Headers {
+		if strings.ToLower(k) == key {
+			// Delete the header if it exists
+			delete(req.Headers, k)
+		}
+	}
 }
 
 // Send sends the HTTP request with the supplied parameters
@@ -191,8 +201,10 @@ func (req *Request) Send() (*Response, error) {
 	// Add return headers
 	rHeaders := make(map[string]string)
 	for k, v := range httpResponse.Header {
-		lowerKey := strings.ToLower(k)
-		rHeaders[lowerKey] = v[0]
+		if len(v) > 0 {
+			lowerKey := strings.ToLower(k)
+			rHeaders[lowerKey] = v[0]
+		}
 	}
 
 	// Load the request body
@@ -203,25 +215,25 @@ func (req *Request) Send() (*Response, error) {
 	}
 
 	// Format the response & return
-	resp := Response{
+	res := Response{
 		Ok:         httpResponse.StatusCode < 400,
 		StatusCode: httpResponse.StatusCode,
 		Headers:    rHeaders,
 		Body:       body,
 	}
 
-	return &resp, nil
+	return &res, nil
 }
 
 // MustSend sends the HTTP request and panic if an error is returned.
 // (Calls Send() internally)
 func (req *Request) MustSend() *Response {
-	resp, err := req.Send()
+	res, err := req.Send()
 	if err != nil {
 		panic(err)
 	}
 
-	return resp
+	return res
 }
 
 // Response is a type that represents an HTTP response
@@ -236,27 +248,33 @@ type Response struct {
 // GetHeader gets a header value from the response if it exists.
 // Normalizes the key to lowercase before checking.
 // Returns the value of the header and whether it exists.
-func (resp *Response) GetHeader(name string) (string, bool) {
+func (res *Response) GetHeader(name string) (string, bool) {
 	// Create the map if it doesn't exist
-	if resp.Headers == nil {
-		resp.Headers = make(map[string]string)
+	if res.Headers == nil {
+		res.Headers = make(map[string]string)
 	}
 
 	// Normalize the key (convert to lowercase)
 	key := strings.ToLower(name)
 
-	// Return the header and whether it exists
-	value, ok := resp.Headers[key]
-	return value, ok
+	// Do a case-insensitive check for the key
+	for k, v := range res.Headers {
+		if strings.ToLower(k) == key {
+			return v, true
+		}
+	}
+
+	// Return not found
+	return "", false
 }
 
 // JSON unmarshalls the response body into a map
-func (resp *Response) JSON() (map[string]interface{}, error) {
+func (res *Response) JSON() (map[string]interface{}, error) {
 	// Create a new map to store the JSON data
 	data := make(map[string]interface{})
 
 	// Unmarshal the JSON data
-	err := json.Unmarshal(resp.Body, &data)
+	err := json.Unmarshal(res.Body, &data)
 	if err != nil {
 		return nil, err
 	}
