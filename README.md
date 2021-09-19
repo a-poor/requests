@@ -7,6 +7,7 @@
 [![GitHub](https://img.shields.io/github/license/a-poor/requests?style=flat-square)](https://github.com/a-poor/requests/blob/main/LICENSE)
 ![GitHub last commit](https://img.shields.io/github/last-commit/a-poor/requests?style=flat-square)
 [![Sourcegraph](https://sourcegraph.com/github.com/a-poor/requests/-/badge.svg)](https://sourcegraph.com/github.com/a-poor/requests?badge)
+[![CodeFactor](https://www.codefactor.io/repository/github/a-poor/requests/badge/main)](https://www.codefactor.io/repository/github/a-poor/requests/overview/main)
 
 _created by Austin Poor_
 
