@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"strings"
 	"time"
 )
@@ -70,6 +71,7 @@ type Request struct {
 	URL     string            // URL to send the request to
 	Method  HTTPMethod        // HTTP method to use
 	Headers map[string]string // Headers to send with the request
+	Query   map[string]string // Query parameters to send with the request
 	Body    []byte            // Body to send with the request
 	Timeout time.Duration     // Timeout for the request
 }
@@ -114,6 +116,30 @@ func SendPostRequest(url string, contentType string, body []byte) (*Response, er
 // passed to the http.NewRequest function
 func (req *Request) getReqBody() *bytes.Buffer {
 	return bytes.NewBuffer(req.Body)
+}
+
+// getURL returns the string formatted URL with
+// the query parameters
+func (req *Request) getURL() (string, error) {
+	// Make sure there's a URL
+	if req.URL == "" {
+		return "", fmt.Errorf("URL is required")
+	}
+
+	// Encode the query parameters (if any)
+	vals := url.Values{}
+	for k, v := range req.Query {
+		vals.Set(k, v)
+	}
+	q := vals.Encode()
+
+	// Format the URL with the query parameters (if any)
+	u := req.URL
+	if q != "" {
+		u = fmt.Sprintf("%s?%s", u, q)
+	}
+
+	return u, nil
 }
 
 // GetHeader gets a header value from the request. Normalizes the key
@@ -166,12 +192,47 @@ func (req *Request) DelHeader(name string) {
 	// Normalize the key (convert to lowercase)
 	key := strings.ToLower(name)
 
-	for k, _ := range req.Headers {
+	for k := range req.Headers {
 		if strings.ToLower(k) == key {
 			// Delete the header if it exists
 			delete(req.Headers, k)
 		}
 	}
+}
+
+// GetQuery gets a query value from the request. Returns the
+// value associated with the key and whether it exists.
+func (req *Request) GetQuery(name string) (string, bool) {
+	// Create the map if it doesn't exist
+	if req.Query == nil {
+		req.Query = make(map[string]string)
+	}
+
+	val, ok := req.Query[name]
+	return val, ok
+}
+
+// SetQuery sets a header value in the request.
+func (req *Request) SetQuery(name, value string) {
+	// Create the map if it doesn't exist
+	if req.Query == nil {
+		req.Query = make(map[string]string)
+	}
+
+	// Set the Query param if it exists
+	req.Query[name] = value
+}
+
+// DelQuery deletes a query value from the request headers
+// if it exists.
+func (req *Request) DelQuery(name string) {
+	// Create the map if it doesn't exist
+	if req.Query == nil {
+		req.Query = make(map[string]string)
+	}
+
+	// Delete the query param if it exists
+	delete(req.Query, name)
 }
 
 // Send sends the HTTP request with the supplied parameters
@@ -181,8 +242,14 @@ func (req *Request) Send() (*Response, error) {
 		Timeout: req.Timeout,
 	}
 
+	// Format the URL with the query parameters (if any)
+	u, err := req.getURL()
+	if err != nil {
+		return nil, err
+	}
+
 	// Create the underlying request
-	httpRequest, err := http.NewRequest(req.Method.String(), req.URL, req.getReqBody())
+	httpRequest, err := http.NewRequest(req.Method.String(), u, req.getReqBody())
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %w", err)
 	}
@@ -225,8 +292,8 @@ func (req *Request) Send() (*Response, error) {
 	return &res, nil
 }
 
-// MustSend sends the HTTP request and panic if an error is returned.
-// (Calls Send() internally)
+// MustSend sends the HTTP request and panic if an error
+// is returned. (Calls Send() internally)
 func (req *Request) MustSend() *Response {
 	res, err := req.Send()
 	if err != nil {

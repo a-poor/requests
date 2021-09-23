@@ -112,6 +112,36 @@ func TestSendGetRequest(t *testing.T) {
 
 }
 
+func TestQueryParams(t *testing.T) {
+	params := map[string]string{
+		"foo": "bar",
+		"baz": "qux",
+	}
+
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		q := r.URL.Query()
+		for k, v := range params {
+			if q.Get(k) != v {
+				t.Errorf("Query param %s is \"%s\" not \"%s\"", k, q.Get(k), v)
+			}
+		}
+	}))
+	defer ts.Close()
+
+	req := requests.Request{
+		Method: requests.GET,
+		URL:    ts.URL,
+	}
+	for k, v := range params {
+		req.SetQuery(k, v)
+	}
+	_, err := req.Send()
+	if err != nil {
+		t.Error(err)
+	}
+
+}
+
 func TestSendPostRequest(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Make sure the request is a POST
