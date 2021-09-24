@@ -132,20 +132,21 @@ func (req *Request) getURL() (string, error) {
 		return "", fmt.Errorf("URL is required")
 	}
 
+	// Create a URL object from the supplied string URL
+	u, err := url.Parse(req.URL)
+	if err != nil {
+		return "", err
+	}
+
 	// Encode the query parameters (if any)
 	vals := url.Values{}
 	for k, v := range req.Query {
 		vals.Set(k, v)
 	}
 	q := vals.Encode()
+	u.RawQuery = q
 
-	// Format the URL with the query parameters (if any)
-	u := req.URL
-	if q != "" {
-		u = fmt.Sprintf("%s?%s", u, q)
-	}
-
-	return u, nil
+	return u.String(), nil
 }
 
 // GetHeader gets a header value from the request. Normalizes the key
