@@ -48,5 +48,4 @@ func main() {
 ## ToDo
 
 * Path parameters using [templates](https://pkg.go.dev/text/template)
-* Parse URLs safely. Currently, query params are added via: `url + "?" + encodedQueryParams`. Instead, use `net/url` to extract existing query params, etc.
 
