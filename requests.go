@@ -75,7 +75,6 @@ func (m HTTPMethod) String() string {
 		return "TRACE"
 	case PATCH:
 		return "PATCH"
-
 	}
 	return ""
 }
@@ -83,10 +82,8 @@ func (m HTTPMethod) String() string {
 // Request is a type that represents an HTTP request
 //
 // Notes:
-// ======
-// * URL is assumed not to include query parameters or fragments
-// * Headers and Query don't support multiple values
-// * Timeout of 0 means no timeout
+//   - Headers and Query dont support multiple values
+//   - Timeout of 0 means no timeout
 type Request struct {
 	URL     string            // URL to send the request to
 	Method  HTTPMethod        // HTTP method to use
