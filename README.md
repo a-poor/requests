@@ -47,5 +47,4 @@ func main() {
 
 ## ToDo
 
-* Path parameters using [templates](https://pkg.go.dev/text/template)
 
