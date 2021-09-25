@@ -15,7 +15,7 @@ A quick and easy HTTP request library written in Go.
 
 This library is inspired by the Python Requests library. I wrote it for myself in order to make the HTTP client process a little more _ergonomic_ when writing Go code.
 
-Check out some more examples and documentation here: [...](#)
+Check out some more examples and documentation here: [a-poor.github.io/requests](https://a-poor.github.io/requests)
 
 ## Table of Contents
 
@@ -68,9 +68,9 @@ Only the standard library!
 
 ## Contributing
 
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+Pull requests are super welcome! For major changes, please open an issue first to discuss what you would like to change. And please make sure to update tests as appropriate.
 
-Please make sure to update tests as appropriate.
+_Or_... feel free to just open an issue with some thoughts or suggestions or even just to say _Hi_ and tell me if this library has been helpful!
 
 ## License
 
@@ -81,4 +81,6 @@ Please make sure to update tests as appropriate.
 * Update documentation (mkdocs)
 * Update documentation (in-code)
 * Update tests
+* Add benchmarks
+* Add examples
 * Move to `v1`?
