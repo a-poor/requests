@@ -11,6 +11,32 @@ import (
 	"github.com/a-poor/requests"
 )
 
+func TestURLEncode(t *testing.T) {
+	res := requests.URLEncode("foo")
+	expect := "foo"
+	if res != expect {
+		t.Errorf("URLEncode expected %q not %q", expect, res)
+	}
+
+	res = requests.URLEncode("Hello, World!")
+	expect = "Hello%2C%20World%21"
+	if res != expect {
+		t.Errorf("URLEncode expected %q not %q", expect, res)
+	}
+
+	res = requests.URLEncode(123)
+	expect = "123"
+	if res != expect {
+		t.Errorf("URLEncode expected %q not %q", expect, res)
+	}
+
+	res = requests.URLEncode("1/2")
+	expect = "1%2F2"
+	if res != expect {
+		t.Errorf("URLEncode expected %q not %q", expect, res)
+	}
+}
+
 func TestJSONMust(t *testing.T) {
 	defer func() {
 		if err := recover(); err != nil {
@@ -139,7 +165,52 @@ func TestQueryParams(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
+}
 
+func TestRequestCopy(t *testing.T) {
+	r1 := requests.Request{
+		Method: requests.GET,
+		URL:    "http://example.com",
+		Body:   []byte("Hello, World!"),
+		Headers: map[string]string{
+			"Content-Type": "application/json",
+		},
+	}
+	r2 := r1.Copy()
+
+	// Are the pointers the same?
+	if &r1 == r2 {
+		t.Error("request pointer doesn't change after copy")
+	}
+
+	// Make sure the header maps are pointing to different maps
+	r1.Headers["Content-Type"] = "text/plain"
+	if r2.Headers["Content-Type"] == "text/plain" {
+		t.Error("coppied request header map not coppied")
+	}
+}
+
+func TestRequestPathParse(t *testing.T) {
+	templatePath := `http://example.com/{{ .UserID }}/{{ .Text | URLEncode }}`
+	data := struct {
+		UserID int
+		Text   string
+	}{
+		UserID: 123,
+		Text:   "Hello, World!",
+	}
+	resultPath := `http://example.com/123/Hello%2C%20World%21`
+
+	req := &requests.Request{
+		URL: templatePath,
+	}
+	req, err := req.ParsePathParams(data)
+	if err != nil {
+		t.Error(err)
+	}
+	if req.URL != resultPath {
+		t.Errorf("unexpected path formatting %q not %q", req.URL, resultPath)
+	}
 }
 
 func TestSendPostRequest(t *testing.T) {
