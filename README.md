@@ -11,15 +11,32 @@
 
 _created by Austin Poor_
 
-A quick and easy HTTP request library written in Go.
+A quick and easy HTTP request library written in Go. 
+
+This library is inspired by the Python Requests library. I wrote it for myself in order to make the HTTP client process a little more _ergonomic_ when writing Go code.
+
+Check out some more examples and documentation here: [...](#)
+
+## Table of Contents
+
+* [Installation](#installation)
+* [Quick Start](#quick-start)
+* [Dependencies](#dependencies)
+* [Contributing](#contributing)
+* [License](#license)
+* [To-Do / Roadmap](#to-do-%2F-roadmap)
 
 ## Installation
+
+Installation is quick and easy!
 
 ```bash
 go get github.com/a-poor/requests
 ```
 
 ## Quick Start
+
+Here's a quick example of `requests` in action.
 
 ```go
 package main
@@ -45,6 +62,23 @@ func main() {
 }
 ```
 
-## ToDo
+## Dependencies
 
+Only the standard library!
 
+## Contributing
+
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+
+Please make sure to update tests as appropriate.
+
+## License
+
+[MIT](./LICENSE)
+
+## To-Do / Roadmap
+
+* Update documentation (mkdocs)
+* Update documentation (in-code)
+* Update tests
+* Move to `v1`?
