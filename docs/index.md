@@ -11,11 +11,11 @@
 
 _created by Austin Poor_
 
-A quick and easy HTTP request library written in Go. 
+Welcome to the documentation for the Go package [github.com/a-poor/request].
+
+`requests` is quick and easy HTTP request library written in Go. 
 
 This library is inspired by the Python Requests library. I wrote it for myself in order to make the HTTP client process a little more _ergonomic_ when writing Go code.
-
-Check out some more examples and documentation here: [a-poor.github.io/requests](https://a-poor.github.io/requests)
 
 ## Table of Contents
 
@@ -24,7 +24,7 @@ Check out some more examples and documentation here: [a-poor.github.io/requests]
 * [Dependencies](#dependencies)
 * [Contributing](#contributing)
 * [License](#license)
-* [To-Do / Roadmap](#to-do--roadmap)
+* [To-Do / Roadmap](#to-do-roadmap)
 
 ## Installation
 
@@ -85,5 +85,3 @@ _Or_... feel free to just open an issue with some thoughts or suggestions or eve
 * Add examples
 * Move to `v1`?
 
-* Add a helper POST-JSON function (aka `SendPostRequest` with an `application/json` content type. And maybe also wraps `json.Marshal`?)
-* Add a helper HTTP Method enum from string fn?

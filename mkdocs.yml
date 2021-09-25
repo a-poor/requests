@@ -1,0 +1,26 @@
+site_name: requests
+theme:
+  name: material
+  custom_dir: overrides
+  features:
+    - navigation.top
+    - navigation.expand
+
+repo_name: a-poor/requests
+repo_url: https://github.com/a-poor/requests
+
+markdown_extensions:
+  - pymdownx.highlight
+  - pymdownx.superfences
+
+nav:
+  - Home: index.md
+  - quick-start.md
+  - Requests:
+    - requests/index.md
+    - requests/header-and-query.md
+    - requests/path-params.md
+  - understanding-responses.md
+  - Examples:
+    - examples/index.md
+
