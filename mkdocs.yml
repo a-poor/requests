@@ -1,7 +1,6 @@
 site_name: requests
 theme:
   name: material
-  custom_dir: overrides
   features:
     - navigation.top
     - navigation.expand
