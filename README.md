@@ -24,7 +24,7 @@ Check out some more examples and documentation here: [...](#)
 * [Dependencies](#dependencies)
 * [Contributing](#contributing)
 * [License](#license)
-* [To-Do / Roadmap](#to-do-%2F-roadmap)
+* [To-Do / Roadmap](#to-do--roadmap)
 
 ## Installation
 
