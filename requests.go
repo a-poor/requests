@@ -8,8 +8,23 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"text/template"
 	"time"
 )
+
+// URLEncode will encode `data` as a URL-safe string
+// Uses fmt.Sprint and url.PathEscape to do the encoding.
+func URLEncode(data interface{}) string {
+	return url.PathEscape(fmt.Sprint(data))
+}
+
+// makeTemplate creates a new Go template instance
+// pre-loaded with the URLEncode function.
+func makeTemplate() *template.Template {
+	return template.New("url").Funcs(template.FuncMap{
+		"URLEncode": URLEncode,
+	})
+}
 
 // JSONMust marshals a map into a JSON byte slice
 // using json.Marshal and panics if there is an error.
@@ -19,7 +34,6 @@ func JSONMust(data map[string]interface{}) []byte {
 		panic(err)
 	}
 	return res
-
 }
 
 // HTTPMethod is a type that represents an
@@ -118,6 +132,32 @@ func SendPostRequest(url string, contentType string, body []byte) (*Response, er
 	return NewPostRequest(url, contentType, body).Send()
 }
 
+// Copy will create a copy of the Request object
+func (req *Request) Copy() *Request {
+	r := Request{
+		URL:     req.URL,
+		Method:  req.Method,
+		Timeout: req.Timeout,
+	}
+	if req.Headers != nil {
+		r.Headers = make(map[string]string)
+		for k, v := range req.Headers {
+			r.Headers[k] = v
+		}
+	}
+	if req.Query != nil {
+		r.Query = make(map[string]string)
+		for k, v := range req.Query {
+			r.Query[k] = v
+		}
+	}
+	if req.Body != nil {
+		r.Body = make([]byte, len(req.Body))
+		copy(r.Body, req.Body)
+	}
+	return &r
+}
+
 // getReqBody returns the request body as a buffer that can be
 // passed to the http.NewRequest function
 func (req *Request) getReqBody() *bytes.Buffer {
@@ -146,6 +186,47 @@ func (req *Request) getURL() (string, error) {
 	}
 
 	return u, nil
+}
+
+// formatPath will use Go templates to format the path
+// using the data parameter.
+func (req *Request) formatPath(data interface{}) (string, error) {
+	tmpl, err := makeTemplate().Parse(req.URL)
+	if err != nil {
+		return "", err
+	}
+	buf := bytes.Buffer{}
+	err = tmpl.Execute(&buf, data)
+	if err != nil {
+		return "", err
+	}
+	return buf.String(), nil
+}
+
+// ParsePathParams will create a copy of the Request object
+// and replace URL parameters with the supplied data.
+//
+// Note: The URL template has access to the `URLEncode` function
+// which can be used to safely encode a string. (ex `{{ "Hello world" | URLEncode }}`
+// will return `Hello%20world`)
+func (req *Request) ParsePathParams(data interface{}) (*Request, error) {
+	u, err := req.formatPath(data)
+	if err != nil {
+		return nil, err
+	}
+	r := req.Copy()
+	r.URL = u
+	return r, nil
+}
+
+// MustParsePathParams is the same as ParsePathParams except it panics
+// if there is an error.
+func (req *Request) MustParsePathParams(data interface{}) *Request {
+	r, err := req.ParsePathParams(data)
+	if err != nil {
+		panic(err)
+	}
+	return r
 }
 
 // GetHeader gets a header value from the request. Normalizes the key
