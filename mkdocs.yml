@@ -20,6 +20,7 @@ nav:
     - requests/header-and-query.md
     - requests/path-params.md
   - understanding-responses.md
+  - extras.md
   - Examples:
     - examples/index.md
 

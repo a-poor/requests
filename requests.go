@@ -391,7 +391,7 @@ func (req *Request) MustSend() *Response {
 // Response is a type that represents an HTTP response
 // returned from an HTTP request
 type Response struct {
-	Ok         bool              // Was the request successful? (Status codes: 200-399)
+	Ok         bool              // Was the request successful? (Status codes: 100-399)
 	StatusCode int               // HTTP response status code
 	Headers    map[string]string // HTTP Response headers
 	Body       []byte            // HTTP Response body
