@@ -119,7 +119,7 @@ var MIMETypes = map[string]string{
 	".7z":     "application/x-7z-compressed",
 }
 
-// GuessMIMEType is a helper function for guessing the MIME type
+// GuessMIME is a helper function for guessing the MIME type
 // of a file, based on it's filename using the MIMETypes map.
 //
 // It returns the MIME type and a boolean indicating if it was
@@ -132,4 +132,17 @@ func GuessMIME(filename string) (string, bool) {
 	ext := strings.ToLower(filepath.Ext(filename))
 	mime, ok := MIMETypes[ext]
 	return mime, ok
+}
+
+// GuessMIMEWithDefault is a helper function for guessing the MIME type
+// using GuessMIME but returning `defaultMIME` if the MIME type can't
+// be guessed.
+//
+// Consider using `MIMEDefaultText` or `MIMEDefaultBinary` as `defaultMIME`.
+func GuessMIMEWithDefault(filename string, defaultMIME string) string {
+	mime, ok := GuessMIME(filename)
+	if !ok {
+		return defaultMIME
+	}
+	return mime
 }
