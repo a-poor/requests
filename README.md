@@ -76,14 +76,3 @@ _Or_... feel free to just open an issue with some thoughts or suggestions or eve
 
 [MIT](./LICENSE)
 
-## To-Do / Roadmap
-
-* Update documentation (mkdocs)
-* Update documentation (in-code)
-* Update tests
-* Add benchmarks
-* Add examples
-* Move to `v1`?
-
-* Add a helper POST-JSON function (aka `SendPostRequest` with an `application/json` content type. And maybe also wraps `json.Marshal`?)
-* Add a helper HTTP Method enum from string fn?
