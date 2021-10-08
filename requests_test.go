@@ -297,13 +297,35 @@ func TestResponseJSON(t *testing.T) {
 }
 
 func BenchmarkResponseJSON(b *testing.B) {
+	resp := requests.Response{
+		Ok:         true,
+		StatusCode: 200,
+		Body:       []byte(`{"message":"pong"}`),
+	}
+	b.ReportAllocs()
 	for n := 0; n < b.N; n++ {
-		resp := requests.Response{
-			Ok:         true,
-			StatusCode: 200,
-			Body:       []byte(`{"message":"pong"}`),
+		if _, err := resp.JSON(); err != nil {
+			b.Fatal(err)
 		}
-		resp.JSON()
+	}
+}
+
+func BenchmarkSend(b *testing.B) {
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "GET" {
+			b.Errorf("Request method is \"%s\" not GET", r.Method)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer ts.Close()
+
+	b.ReportAllocs()
+	for i := 0; i < b.N; i++ {
+		_, err := requests.SendGetRequest(ts.URL)
+		if err != nil {
+			b.Fatal(err)
+		}
 	}
 }
 
@@ -327,4 +349,140 @@ func ExampleSendGetRequest() {
 	}
 	fmt.Println(res.StatusCode)
 	// Output: 200
+}
+
+func TestSendGetRequestWith500InternalError(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			t.Errorf("Request method is \"%s\" not GET", r.Method)
+			return
+		}
+		w.WriteHeader(http.StatusInternalServerError)
+	}))
+	defer ts.Close()
+
+	res, err := requests.SendGetRequest(ts.URL)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if res.StatusCode != http.StatusInternalServerError {
+		t.Errorf("status code is not %d", http.StatusInternalServerError)
+	}
+}
+
+func TestSendGetRequestWith500InternalWithJsonBody(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			t.Errorf("Request method is \"%s\" not GET", r.Method)
+			return
+		}
+
+		w.WriteHeader(http.StatusInternalServerError)
+		_, err := w.Write([]byte(`{"error": true}`))
+		if err != nil {
+			t.Error(err)
+		}
+	}))
+	defer ts.Close()
+
+	res, err := requests.SendGetRequest(ts.URL)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if res.StatusCode != http.StatusInternalServerError {
+		t.Errorf("status code is not %d", http.StatusInternalServerError)
+	}
+
+	jresp, err := res.JSON()
+	if err != nil {
+		t.Error(err)
+	}
+
+	if jresp["error"] != true {
+		t.Error("expected `error` field to be set in json response")
+	}
+}
+
+func TestSendGetRequestWithJsonResponse(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			t.Errorf("Request method is \"%s\" not GET", r.Method)
+			return
+		}
+
+		_, err := w.Write([]byte(`
+{
+	"a": "test",
+	"b": true, 
+	"c": 3
+}
+`))
+		if err != nil {
+			t.Fatal(err)
+		}
+	}))
+	defer ts.Close()
+
+	res, err := requests.SendGetRequest(ts.URL)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if res.StatusCode != http.StatusOK {
+		t.Error("status code is not 200")
+	}
+
+	jresp, err := res.JSON()
+	if err != nil {
+		t.Error(err)
+	}
+
+	if jresp["a"] != "test" {
+		t.Errorf("expected 'test' but was %v", jresp["a"])
+	}
+
+	if jresp["b"] != true {
+		t.Errorf("expected 'true' but was %v", jresp["b"])
+	}
+
+	if jresp["c"] != 3.0 {
+		t.Errorf("expected '3' but was %v", jresp["c"])
+	}
+
+	if jresp["_"] != nil {
+		t.Errorf("expected 'nil' but was %v", jresp["_"])
+	}
+
+}
+
+func TestSendGetRequestWithEmptyResponse(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			t.Errorf("Request method is \"%s\" not GET", r.Method)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer ts.Close()
+
+	res, err := requests.SendGetRequest(ts.URL)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if res.StatusCode != http.StatusOK {
+		t.Error("status code is not 200")
+	}
+
+	jresp, err := res.JSON()
+	if err != nil {
+		t.Error(err)
+	}
+
+	if len(jresp) != 0 {
+		t.Fatal("expected empty json on empty body")
+	}
 }

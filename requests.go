@@ -422,6 +422,10 @@ func (res *Response) GetHeader(name string) (string, bool) {
 
 // JSON unmarshalls the response body into a map
 func (res *Response) JSON() (map[string]interface{}, error) {
+	if len(res.Body) == 0 {
+		return nil, nil
+	}
+
 	// Create a new map to store the JSON data
 	data := make(map[string]interface{})
 
