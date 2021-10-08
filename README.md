@@ -24,7 +24,6 @@ Check out some more examples and documentation here: [a-poor.github.io/requests]
 * [Dependencies](#dependencies)
 * [Contributing](#contributing)
 * [License](#license)
-* [To-Do / Roadmap](#to-do--roadmap)
 
 ## Installation
 
