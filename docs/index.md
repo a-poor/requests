@@ -24,7 +24,6 @@ This library is inspired by the Python Requests library. I wrote it for myself i
 * [Dependencies](#dependencies)
 * [Contributing](#contributing)
 * [License](#license)
-* [To-Do / Roadmap](#to-do-roadmap)
 
 ## Installation
 
@@ -76,12 +75,4 @@ _Or_... feel free to just open an issue with some thoughts or suggestions or eve
 
 [MIT](./LICENSE)
 
-## To-Do / Roadmap
-
-* Update documentation (mkdocs)
-* Update documentation (in-code)
-* Update tests
-* Add benchmarks
-* Add examples
-* Move to `v1`?
 
