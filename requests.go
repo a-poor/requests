@@ -129,6 +129,13 @@ func SendPostRequest(url string, contentType string, body []byte) (*Response, er
 	return NewPostRequest(url, contentType, body).Send()
 }
 
+// SendPostJSONRequest creates a new HTTP POST request with json content type header
+// and sends it to the specified URL.
+// Internally, calls `NewPostRequest(url, "application/json", body).Send()`
+func SendPostJSONRequest(url string, body []byte) (*Response, error) {
+	return NewPostRequest(url, "application/json", body).Send()
+}
+
 // Copy will create a copy of the Request object
 func (req *Request) Copy() *Request {
 	r := Request{
