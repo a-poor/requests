@@ -277,6 +277,77 @@ func TestSendPostRequest(t *testing.T) {
 
 }
 
+func TestSendJSONPostRequest(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Make sure the request is a POST
+		if r.Method != "POST" {
+			t.Errorf("Request method is \"%s\" not POST", r.Method)
+		}
+
+		contentType := r.Header.Get("Content-Type")
+		if contentType == "" {
+			t.Error("Request does not contain the Content-Type header")
+		} else if contentType != "application/json" {
+			t.Errorf("Request Content-Type is %s, not application/json", contentType)
+		}
+
+		// Read the request body
+		body, err := io.ReadAll(r.Body)
+		if err != nil {
+			t.Error(err)
+		}
+		defer r.Body.Close()
+
+		// Unmarshal the request body
+		var data map[string]string
+		err = json.Unmarshal(body, &data)
+		if err != nil {
+			t.Error(err)
+		}
+
+		// Make sure the request body is correct
+		msg, ok := data["message"]
+		if !ok {
+			t.Error("message not found in request body")
+		}
+		if msg != "ping" {
+			t.Errorf("message is \"%s\" not \"ping\"", msg)
+		}
+
+		// Write the response message
+		respBody := map[string]string{"message": "pong"}
+		rdata, _ := json.Marshal(respBody)
+		fmt.Fprintln(w, string(rdata))
+		r.Header.Set("Content-Type", "application/json")
+
+	}))
+	defer ts.Close()
+
+	// Create a POST request
+	data, _ := json.Marshal(map[string]string{"message": "ping"})
+	res, err := requests.SendPostJSONRequest(ts.URL, data)
+	if err != nil {
+		t.Error(err)
+	}
+
+	// Check the return status code
+	if res.StatusCode != 200 {
+		t.Error("status code is not 200")
+	}
+
+	// Check the response body
+	respData := make(map[string]string)
+	json.Unmarshal(res.Body, &respData)
+	msg, ok := respData["message"]
+	if !ok {
+		t.Error("message not found in response body")
+	}
+	if msg != "pong" {
+		t.Error(fmt.Sprintf("response body is \"%s\" not Hello, World!", msg))
+	}
+
+}
+
 func TestResponseJSON(t *testing.T) {
 	resp := requests.Response{
 		Ok:         true,
